@@ -2,6 +2,19 @@ import React, { Component } from 'react';
 import classnames from 'classnames';
 import './App.css';
 
+class PlayArea extends Component {
+  render() {
+  	var areaClass = classnames({
+  		button: true,
+  		black: this.props.gameState === "b",
+  		white: this.props.gameState === "w"
+  	})
+    return (
+      <button className={areaClass} onClick={() => this.props.onClick()}></button>
+    );
+  }
+}
+
 class PlaceMarker extends Component {
   render() {
     var markerStyle;
@@ -13,19 +26,6 @@ class PlaceMarker extends Component {
     return (
       <div className="placeMarker" style={markerStyle}></div>
     )
-  }
-}
-
-class PlayArea extends Component {
-  render() {
-  	var areaClass = classnames({
-  		button: true,
-  		black: this.props.gameState === "b",
-  		white: this.props.gameState === "w"
-  	})
-    return (
-      <button className={areaClass} onClick={() => this.props.onClick()}></button>
-    );
   }
 }
 
@@ -80,6 +80,13 @@ class Game extends Component {
     	winner: result
     });
   }
+  restartGame(){
+  	this.setState({
+  		gameState: Array(17).fill(Array(17).fill(null)),
+      blackMove: true,
+      winner: ""
+  	});
+  }
   render() {
     let status;
     if (this.state.winner) status = this.state.winner;
@@ -89,7 +96,7 @@ class Game extends Component {
         <Board gameState={this.state.gameState} onClick={(r, c) => this.handleClick(r, c)}/>
         <div>{status}</div>
         <button>Undo</button>
-        <button>(Re)start</button>
+        <button onClick={() => this.restartGame()}>(Re)start</button>
         <h4>White score:</h4>
         <h4>Black score:</h4>
         <small>This version's rules:</small>

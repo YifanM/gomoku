@@ -12,7 +12,7 @@
   height: 511px;
   padding: 14px 16px;
   border: 3px solid black;
-  background: linear-gradient(0deg, #000000 0, #FFFFFF 2px, rgba(0,0,0,0) 2px, rgba(0,0,0,0) 100%), linear-gradient(90deg, #000000 0, #FFFFFF 2px, rgba(0,0,0,0) 2px, rgba(0,0,0,0) 100%), rgba(255,255,255,1);
+  background: linear-gradient(0deg, white 0, black 2px, transparent 2px, transparent 100%), linear-gradient(90deg, white 0, black 2px, transparent 2px, transparent 100%), white;
   background-position: -2px -2px;
   background-size: 34px 34px;
 }
@@ -34,7 +34,6 @@
   border-radius: 50%;
   background: transparent;
   border-color: transparent;
-  /*border: 2px solid black;*/
 }
 
 .button:focus {
@@ -51,6 +50,11 @@
   background: black;
 }
 
+.black, .white {
+  animation-name: grow;
+  animation-duration: 0.3s;
+}
+
 .black {
 	background: black;
 }
@@ -58,4 +62,9 @@
 .white {
 	background: white;
 	border: 2px solid black;
+}
+
+@keyframes grow {
+  0% {transform: scale(0, 0);}
+  100% {transform: scale(1, 1);}
 }

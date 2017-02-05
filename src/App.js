@@ -65,19 +65,26 @@ class Game extends Component {
     this.state = {
       gameState: Array(17).fill(Array(17).fill(null)),
       blackMove: true,
-      winner: ""
+      winner: "",
+      blackWins: 0,
+      whiteWins: 0,
     }
   }
   handleClick(r, c){
   	if (this.state.gameState[r][c] || this.state.winner) return;
   	const gameState = this.state.gameState.map((row) => row.slice());
+  	let blackWins = this.state.blackWins;
+  	let whiteWins = this.state.whiteWins;
   	if (this.state.blackMove) gameState[r][c] = "b";
   	else gameState[r][c] = "w";
   	let result = moveResult(r, c, this.state.blackMove ? "b" : "w", gameState);
+  	if (result) result === "Black wins." ? blackWins += 1 : whiteWins += 1;
     this.setState({
     	gameState: gameState,
     	blackMove: !this.state.blackMove,
-    	winner: result
+    	winner: result,
+    	blackWins: blackWins,
+    	whiteWins: whiteWins,
     });
   }
   restartGame(){
@@ -97,8 +104,8 @@ class Game extends Component {
         <div>{status}</div>
         <button>Undo</button>
         <button onClick={() => this.restartGame()}>(Re)start</button>
-        <h4>White score:</h4>
-        <h4>Black score:</h4>
+        <h4>Black score: {this.state.blackWins}</h4>
+        <h4>White score: {this.state.whiteWins}</h4>
         <small>This version's rules:</small>
         <li>No swap</li>
         <li>Rows of five or more win</li>

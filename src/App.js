@@ -18,15 +18,20 @@ class PlaceMarker extends Component {
 
 class PlayArea extends Component {
   render() {
+  	var areaClass = classnames({
+  		button: true,
+  		black: this.props.gameState === "b",
+  		white: this.props.gameState === "w"
+  	})
     return (
-      <button className="button" onClick={() => this.props.onClick()}></button>
+      <button className={areaClass} onClick={() => this.props.onClick()}></button>
     );
   }
 }
 
 class Board extends Component {
   renderArea(r, c) {
-    return <PlayArea value={[r, c]} onClick={() => this.props.onClick(r, c)} class/>;
+    return <PlayArea gameState={this.props.gameState[r][c]} value={[r, c]} onClick={() => this.props.onClick(r, c)} class/>;
   }
   render() {
     var gameBoard = [];
@@ -58,16 +63,27 @@ class Game extends Component {
   constructor() {
     super();
     this.state = {
-      gameState: Array(15).fill(Array(15).fill(null)),
-      blackMove: true
+      gameState: Array(17).fill(Array(17).fill(null)),
+      blackMove: true,
+      winner: ""
     }
   }
   handleClick(r, c){
-    this.setState({blackMove: !this.state.blackMove});
-    let result = moveResult(r, c, this.state.blackMove ? "b" : "w", this.state.gameState);
+  	if (this.state.gameState[r][c] || this.state.winner) return;
+  	const gameState = this.state.gameState.map((row) => row.slice());
+  	if (this.state.blackMove) gameState[r][c] = "b";
+  	else gameState[r][c] = "w";
+  	let result = moveResult(r, c, this.state.blackMove ? "b" : "w", gameState);
+    this.setState({
+    	gameState: gameState,
+    	blackMove: !this.state.blackMove,
+    	winner: result
+    });
   }
   render() {
-    var status = (this.state.blackMove ? "Black" : "White") + " to move.";
+    let status;
+    if (this.state.winner) status = this.state.winner;
+    else status = (this.state.blackMove ? "Black" : "White") + " to move.";
     return (
       <div>
         <Board gameState={this.state.gameState} onClick={(r, c) => this.handleClick(r, c)}/>
@@ -94,11 +110,11 @@ class App extends Component {
 }
 
 function travel(r, c, color, gameState, direction){
-  if (r >= 0 && r <= 17 && c >= 0 && c <= 17){
+  if (r < 0 || r > 17 || c < 0 || c > 17){
     return 0;
   }
   else if (gameState[r][c] === color){
-      return travel(r+direction[0], c+direction[1], color, gameState, direction) + 1;
+    return travel(r+direction[0], c+direction[1], color, gameState, direction) + 1;
   }
   return 0;
 }
@@ -106,9 +122,13 @@ function travel(r, c, color, gameState, direction){
 function moveResult(r, c, color, gameState){
   const directions = [[0, 1], [1, 1], [1, 0], [1, -1]];
   for (let i = 0; i < 4; i++){
-    let temp = 1 + travel(r, c, color, gameState, directions[i]) + travel(r, c, color, gameState, directions[i].map(x => {return -x}));
+  	let reverse = directions[i].map(x => {return -x})
+    let temp = travel(r+directions[i][0], c+directions[i][1], color, gameState, directions[i]) 
+    			 	   + travel(r+reverse[0], c+reverse[1], color, gameState, reverse)
+    	    		 + 1;
     if (temp >= 5){
-      return color + "Win";
+  	  if (color === "b") return "Black wins.";
+	  	else return "White wins.";
     }
   }
   //return "illegal";

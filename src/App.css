@@ -5,6 +5,7 @@
 
 .boardBackground {
   z-index: 1;
+  position: relative;
   display: block; 
   margin: auto;
   width: 508px;
@@ -26,6 +27,7 @@
 
 .button {
   z-index: 3;
+  position: relative;
   width: 30px;
   height: 30px;
   margin: 2px;
@@ -37,15 +39,23 @@
 
 .button:focus {
   outline: none;
-  background: black;
 } 
 
 .placeMarker {
+  z-index: 2;
   pointer-events: none;
-  z-index:2;
   position: absolute;
   width: 15px;
   height: 15px;
   border-radius: 50%;
   background: black;
+}
+
+.black {
+	background: black;
+}
+
+.white {
+	background: white;
+	border: 2px solid black;
 }

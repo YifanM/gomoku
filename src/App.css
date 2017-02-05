@@ -1,0 +1,51 @@
+.board {
+  display: block;
+  margin-bottom: 50px;
+}
+
+.boardBackground {
+  z-index: 1;
+  display: block; 
+  margin: auto;
+  width: 508px;
+  height: 511px;
+  padding: 14px 16px;
+  border: 3px solid black;
+  background: linear-gradient(0deg, #000000 0, #FFFFFF 2px, rgba(0,0,0,0) 2px, rgba(0,0,0,0) 100%), linear-gradient(90deg, #000000 0, #FFFFFF 2px, rgba(0,0,0,0) 2px, rgba(0,0,0,0) 100%), rgba(255,255,255,1);
+  background-position: -2px -2px;
+  background-size: 34px 34px;
+}
+
+.boardPieces {
+  position: absolute;
+  left: 50%;
+  margin-left: -288px;
+  top: 0;
+  width: 580px;
+}
+
+.button {
+  z-index: 3;
+  width: 30px;
+  height: 30px;
+  margin: 2px;
+  border-radius: 50%;
+  background: transparent;
+  border-color: transparent;
+  /*border: 2px solid black;*/
+}
+
+.button:focus {
+  outline: none;
+  background: black;
+} 
+
+.placeMarker {
+  pointer-events: none;
+  z-index:2;
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: black;
+}

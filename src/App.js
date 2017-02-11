@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import './App.css';
 import Modal from 'react-modal';
 
-class PlayArea extends Component { // NOT SHRINKING !!!!!!!!!!@#@#@#@#
+class PlayArea extends Component {
   render() {
   	var areaClass = classnames({
   		button: true,
@@ -67,6 +67,7 @@ class Game extends Component {
       gameState: Array(17).fill(Array(17).fill(null)),
       gameHistory: [],
       blackMove: true,
+      initialMoveBlack: true,
       winner: "",
       blackWins: 0,
       whiteWins: 0,
@@ -103,10 +104,26 @@ class Game extends Component {
     });
   }
   restartGame(){
+  	if (this.state.winner === "Black wins.") {
+  		this.setState({
+  			blackMove: false,
+  			initialMoveBlack: false,
+  		})
+  	}
+  	else if (this.state.winner === "White wins.") {
+  		this.setState({
+  			blackMove: true,
+  			initialMoveBlack: true,
+  		})
+  	}
+  	else {
+  		this.setState({
+  			blackMove: this.state.initialMoveBlack,
+  		})
+  	}
   	this.setState({
   		gameState: Array(17).fill(Array(17).fill(null)),
   		gameHistory: [],
-      blackMove: true,
       winner: "",
   	});
   }
@@ -131,7 +148,7 @@ class Game extends Component {
 	        <h4>White's score: {this.state.whiteWins}</h4>
 	      </div>
 	      <button id="rules" onClick={() => this.openModal()}>Rules</button>
-	      <Modal>
+	      {/*<Modal>
         <h3>Rules</h3>
         Each turn, select an intersection to play your piece. Rows can be made in any straight direction.
         <ol>
@@ -144,7 +161,7 @@ class Game extends Component {
 	        	</ol>
 	        </li>
         </ol>
-        </Modal>
+        </Modal>*/}
       </div>
     );
   }

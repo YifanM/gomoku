@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import classnames from 'classnames';
 import './App.css';
 import {ModalContainer, ModalDialog} from 'react-modal-dialog';
+import NotificationSystem from 'react-notification-system';
 
 class PlayArea extends Component {
   render() {
@@ -81,6 +82,9 @@ class Board extends Component {
 }
 
 class Game extends Component {
+
+	notification: null;
+
   constructor() {
     super();
     this.state = {
@@ -107,7 +111,12 @@ class Game extends Component {
   	if (state === "move") { // move
   		result = moveResult(r, c, this.state.blackMove ? "b" : "w", this.state.initialMoveBlack ? "b" : "w", gameState);
   		if (result.search("Illegal") !== -1) {
-  			//let players know somehow here
+  			this.notification.addNotification({
+  				title: "Oops",
+  				message: result,
+  				level: "error",
+  				position: "tc",
+  			})
   			return;
   		}
   		if (this.state.blackMove) {
@@ -176,6 +185,9 @@ class Game extends Component {
   		isModalOpen: false,
   	})
   }
+  componentDidMount() {
+  	this.notification = this.refs.notification;
+  }
   render() {
     let status;
     if (this.state.winner) status = this.state.winner;
@@ -211,6 +223,7 @@ class Game extends Component {
 		        </ol>
 		      </ModalDialog>
         </ModalContainer>}
+        <NotificationSystem ref="notification" />
       </div>
     );
   }

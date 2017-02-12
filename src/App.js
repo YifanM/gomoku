@@ -260,7 +260,7 @@ function moveResult(r, c, color, initialColor, gameState) {
   	const reverse = directions[i].map(x => {return -x});
   	closedTracker.push([]);
 
-  	let isClosed = {value: false};
+  	const isClosed = {value: false};
     const direction1 = travel(r+directions[i][0], c+directions[i][1], color, gameState, directions[i], isClosed);
     closedTracker[i].push(isClosed.value);
 
@@ -283,7 +283,20 @@ function moveResult(r, c, color, initialColor, gameState) {
     	result = "Illegal - First player is only allowed rows of five.";
     }
   }
-  //find open 3-3 and 4-4s using trackers and return illegal
+  
+  if (color === initialColor) {
+  	let openThreeCounter = 0;
+  	let openFourCounter = 0;
+  	for (let i = 0; i < 4; i++) {
+  		if (lengthTracker[i][0] === 2 && lengthTracker[i][1] === 0 && !closedTracker[i][0] && !closedTracker[i][1]) openThreeCounter += 1;
+  		else if (lengthTracker[i][1] === 2 && lengthTracker[i][0] === 0 && !closedTracker[i][1] && !closedTracker[i][0]) openThreeCounter += 1;
+  		else if (lengthTracker[i][0] === 3 && lengthTracker[i][1] === 0 && !closedTracker[i][0] && !closedTracker[i][1]) openFourCounter += 1;
+  		else if (lengthTracker[i][1] === 3 && lengthTracker[i][0] === 0 && !closedTracker[i][1] && !closedTracker[i][0]) openFourCounter += 1;
+  	}
+  	if (openThreeCounter >= 2) result = "Illegal - First player cannot make open 3-3s.";
+  	else if (openFourCounter >= 2) result = "Illegal - First player cannot make open 4-4s.";
+  }
+
   return result;
 }
 

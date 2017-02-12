@@ -23,22 +23,30 @@
   margin-left: -288px;
   top: 0;
   width: 580px;
+  height: 580px;
+}
+
+#playContainer {
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  position: relative;
+  margin: 2px 2px -1px 2px;
+}
+
+button {
+  outline: none;
 }
 
 .button {
-  z-index: 3;
-  position: relative;
-  width: 30px;
-  height: 30px;
-  margin: 2px;
+  z-index: 4;
+  position: absolute;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   background: transparent;
   border-color: transparent;
 }
-
-.button:focus {
-  outline: none;
-} 
 
 .placeMarker {
   z-index: 2;
@@ -51,20 +59,72 @@
 }
 
 .black, .white {
-  animation-name: grow;
   animation-duration: 0.3s;
+  animation-name: shrink;
+  animation-fill-mode: forwards;
+  z-index: 3;
+  position: absolute;
+  border-radius: 50%;
 }
 
 .black {
 	background: black;
+  width: 100%;
+  height: 100%;
 }
 
 .white {
 	background: white;
 	border: 2px solid black;
+  width: 26px;
+  height: 26px;
+}
+
+.grow {
+  animation-name: grow;
 }
 
 @keyframes grow {
   0% {transform: scale(0, 0);}
   100% {transform: scale(1, 1);}
+}
+
+@keyframes shrink {
+  0% {transform: scale(1, 1);}
+  100% {transform: scale(0, 0);}
+}
+
+#menu {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+#menu > button, #rules > button{
+  padding: 3px;
+  margin: 5px;
+  background: white;
+  border: none;
+  font-size: 1.5rem;
+}
+
+#menu > button:hover, #rules > button:hover {
+  border: 2px solid black;
+  margin: 3px;
+}
+
+#scoreboard {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#scoreboard > h4 {
+  margin-left: 50px;
+  margin-right: 50px;
+}
+
+#rules {
+  text-align: center;
 }

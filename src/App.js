@@ -9,7 +9,7 @@ class PlayArea extends Component {
     return (
     	<div id="playContainer">
       	<button className="button" onClick={() => this.props.onClick()}></button>
-      	<PlayAreaGraphic colourState={this.props.colourState} gameState={this.props.gameState}/>
+      	<PlayAreaGraphic colourState={this.props.colourState} gameState={this.props.gameState} />
       </div>
     );
   }
@@ -23,7 +23,7 @@ class PlayAreaGraphic extends Component {
 			white: this.props.colourState === "w",
 		})
 		return (
-				<div className={colour}/>
+				<div className={colour} />
 		);
 	}
 }
@@ -44,7 +44,7 @@ class PlaceMarker extends Component {
 
 class Board extends Component {
   renderArea(r, c) {
-    return <PlayArea colourState={this.props.colourState[r][c]} gameState={this.props.gameState[r][c]} onClick={() => this.props.onClick(r, c, "move")}/>;
+    return <PlayArea colourState={this.props.colourState[r][c]} gameState={this.props.gameState[r][c]} onClick={() => this.props.onClick(r, c, "move")} />;
   }
   componentDidMount() {
   	var node = ReactDOM.findDOMNode(this);
@@ -63,7 +63,7 @@ class Board extends Component {
             (i === 5 && j === 5) ||
             (i === 5 && j === 13) ||
             (i === 13 && j === 5) ||
-            (i === 13 && j === 13)) row.push(<PlaceMarker value={[i, j]}/>);
+            (i === 13 && j === 13)) row.push(<PlaceMarker value={[i, j]} />);
         row.push(this.renderArea(i, j));
       }
       gameBoard.push(row);
@@ -105,8 +105,8 @@ class Game extends Component {
   	let result;
 
   	if (state === "move") { // move
-  		result = moveResult(r, c, this.state.blackMove ? "b" : "w", gameState);
-  		if (result === "Illegal.") {
+  		result = moveResult(r, c, this.state.blackMove ? "b" : "w", this.state.initialMoveBlack ? "b" : "w", gameState);
+  		if (result.search("Illegal") !== -1) {
   			//let players know somehow here
   			return;
   		}
@@ -183,7 +183,7 @@ class Game extends Component {
 
     return (
       <div>
-        <Board colourState={this.state.colourState} gameState={this.state.gameState} onClick={(r, c, state) => this.handleClick(r, c, state)}/>
+        <Board colourState={this.state.colourState} gameState={this.state.gameState} onClick={(r, c, state) => this.handleClick(r, c, state)} />
         <div id="menu">
 	        <div>{status}</div>
 	        <button disabled={!this.state.gameHistory.length} onClick={() => this.undoMove()}>Undo</button>
@@ -203,10 +203,9 @@ class Game extends Component {
 		        <ol>
 			        <li>Second player wins with rows of five or more.</li>
 			        <li>First player wins with only rows of five. In addition, first player cannot
-			        	<ol>
-			        		<li>a</li>
-			        		<li>list</li>
-			        		<li>here</li>
+			        	<ol type="a">
+			        		<li>make open 3-3s</li>
+			        		<li>make open 4-4s</li>
 			        	</ol>
 			        </li>
 		        </ol>
@@ -225,30 +224,54 @@ class App extends Component {
   }
 }
 
-function travel(r, c, color, gameState, direction) {
+function travel(r, c, color, gameState, direction, isClosed) {
   if (r < 0 || r > 16 || c < 0 || c > 16) {
+  	isClosed.value = true;
     return 0;
   }
   else if (gameState[r][c] === color) {
-    return travel(r+direction[0], c+direction[1], color, gameState, direction) + 1;
+    return travel(r+direction[0], c+direction[1], color, gameState, direction, isClosed) + 1;
   }
+  else if (gameState[r][c]) isClosed.value = true;
+
   return 0;
 }
 
-function moveResult(r, c, color, gameState) {
+function moveResult(r, c, color, initialColor, gameState) {
   const directions = [[0, 1], [1, 1], [1, 0], [1, -1]];
+  let lengthTracker = [];
+  let closedTracker = [];
+  let result = "";
+
   for (let i = 0; i < 4; i++) {
-  	let reverse = directions[i].map(x => {return -x})
-    let temp = travel(r+directions[i][0], c+directions[i][1], color, gameState, directions[i]) 
-    			 	   + travel(r+reverse[0], c+reverse[1], color, gameState, reverse)
-    	    		 + 1;
-    if (temp >= 5) {
-  	  if (color === "b") return "Black wins.";
-	  	else return "White wins.";
+  	const reverse = directions[i].map(x => {return -x});
+  	closedTracker.push([]);
+
+  	let isClosed = {value: false};
+    const direction1 = travel(r+directions[i][0], c+directions[i][1], color, gameState, directions[i], isClosed);
+    closedTracker[i].push(isClosed.value);
+
+    isClosed.value = false;
+    const direction2 = travel(r+reverse[0], c+reverse[1], color, gameState, reverse, isClosed);
+    closedTracker[i].push(isClosed.value);
+
+    lengthTracker.push([direction1, direction2]);
+    const lengthOfRow = direction1 + direction2 + 1;
+
+    if (lengthOfRow >= 5 && color !== initialColor) {
+  	  if (color === "b") result = "Black wins.";
+	  	else result = "White wins.";
+    }
+    else if (lengthOfRow === 5) {
+    	if (color === "b") result = "Black wins.";
+	  	else result = "White wins.";
+    }
+    else if (lengthOfRow > 5) {
+    	result = "Illegal - First player is only allowed rows of five.";
     }
   }
-  //return "Illegal.";
-  return null;
+  //find open 3-3 and 4-4s using trackers and return illegal
+  return result;
 }
 
 export default App;

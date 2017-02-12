@@ -100,7 +100,7 @@ button {
   font-weight: bold;
 }
 
-#menu > button, #rules > button{
+#menu > button, #rules > button {
   padding: 3px;
   margin: 5px;
   background: white;

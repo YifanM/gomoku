@@ -280,7 +280,7 @@ function moveResult(r, c, color, initialColor, gameState) {
 	  	else result = "White wins.";
     }
     else if (lengthOfRow > 5) {
-    	result = "Illegal - First player is only allowed rows of five.";
+    	return "Illegal - First player is only allowed rows of five.";
     }
   }
   

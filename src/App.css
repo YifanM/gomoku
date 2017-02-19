@@ -96,6 +96,9 @@ button {
 
 #menu {
   text-align: center;
+}
+
+#menu > div {
   font-size: 2.5rem;
   font-weight: bold;
 }

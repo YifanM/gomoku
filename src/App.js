@@ -197,6 +197,7 @@ class Game extends Component {
       <div>
         <Board colourState={this.state.colourState} gameState={this.state.gameState} onClick={(r, c, state) => this.handleClick(r, c, state)} />
         <div id="menu">
+          <small>Temporary: please resize your window until the dots are aligned with the board.</small>
 	        <div>{status}</div>
 	        <button disabled={!this.state.gameHistory.length} onClick={() => this.undoMove()}>Undo</button>
 	        <button onClick={() => this.restartGame()}>Restart</button>
@@ -280,7 +281,7 @@ function moveResult(r, c, color, initialColor, gameState) {
 	  	else result = "White wins.";
     }
     else if (lengthOfRow > 5) {
-    	return "Illegal - First player is only allowed rows of five.";
+    	result = "Illegal - First player is only allowed rows of five.";
     }
   }
   

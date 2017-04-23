@@ -1,11 +1,10 @@
 @font-face{
   font-family: 'Helvetica Neue';
-  src: url('./HelveticaNeue.ttf');
+  src: url('resources/HelveticaNeue.ttf');
 }
 
 body {
   margin: 15px; 
   padding: 2px;
   font-family: Helvetica Neue, sans-serif;
-  width: 1885px;
 }

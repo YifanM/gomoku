@@ -1,37 +1,36 @@
+#boardContainer {
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+}
+
 .board {
-  display: block;
-  margin-bottom: 50px;
-}
-
-.boardBackground {
-  z-index: 1;
-  position: relative;
-  display: block; 
-  margin: auto;
-  width: 508px;
-  height: 511px;
-  padding: 14px 16px;
   border: 3px solid black;
-  background: linear-gradient(0deg, white 0, black 2px, transparent 2px, transparent 100%), linear-gradient(90deg, white 0, black 2px, transparent 2px, transparent 100%), white;
-  background-position: -2px -2px;
-  background-size: 34px 34px;
+  width: 595px;
+  height: 595px;
+  user-select: none;
 }
 
-.boardPieces {
+.boardRow {
+  height: 35px;
+}
+
+.boardGrid {
+  z-index: 2;
   position: absolute;
-  left: 50%;
-  margin-left: -288px;
-  top: 0;
-  width: 580px;
-  height: 580px;
+  width: 35px;
+  height: 35px;
+  margin-left: -2px;
+  margin-top: -2px;
+  pointer-events: none;
 }
 
 #playContainer {
-  width: 30px;
-  height: 30px;
+  width: 31px;
+  height: 31px;
   display: inline-block;
   position: relative;
-  margin: 2px 2px -1px 2px;
+  margin: 2px;
 }
 
 button {
@@ -39,7 +38,7 @@ button {
 }
 
 .button {
-  z-index: 4;
+  z-index: 5;
   position: absolute;
   width: 100%;
   height: 100%;
@@ -49,7 +48,7 @@ button {
 }
 
 .placeMarker {
-  z-index: 2;
+  z-index: 3;
   pointer-events: none;
   position: absolute;
   width: 15px;
@@ -62,7 +61,7 @@ button {
   animation-duration: 0.3s;
   animation-name: shrink;
   animation-fill-mode: forwards;
-  z-index: 3;
+  z-index: 4;
   position: absolute;
   border-radius: 50%;
 }
@@ -76,8 +75,8 @@ button {
 .white {
 	background: white;
 	border: 2px solid black;
-  width: 26px;
-  height: 26px;
+  width: 27px;
+  height: 27px;
 }
 
 .grow {

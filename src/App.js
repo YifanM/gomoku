@@ -11,6 +11,7 @@ class PlayArea extends Component {
     	<div id="playContainer">
       	<button className="button" onClick={() => this.props.onClick()}></button>
       	<PlayAreaGraphic colourState={this.props.colourState} gameState={this.props.gameState} />
+      	<PlayAreaBoard position={this.props.position} />
       </div>
     );
   }
@@ -24,28 +25,75 @@ class PlayAreaGraphic extends Component {
 			white: this.props.colourState === "w",
 		})
 		return (
-				<div className={colour} />
+			<div className={colour} />
 		);
 	}
 }
 
+class PlayAreaBoard extends Component {
+	render() {
+		let imageSrc;
+		const r = this.props.position[0];
+		const c = this.props.position[1];
+		if (r === 0 && c === 0) imageSrc = "gridCorner1.png";
+		else if (r === 0 && c === 16) imageSrc = "gridCorner2.png";
+		else if (r === 16 && c === 16) imageSrc = "gridCorner3.png";
+		else if (r === 16 && c === 0) imageSrc = "gridCorner4.png";
+		else if (r === 8 && c === 8 || r === 4 && c === 8 || r === 12 && c === 8 ||
+				 r === 8 && c === 4 || r === 4 && c === 4 || r === 12 && c === 4 ||
+				 r === 8 && c === 12 || r === 4 && c === 12 || r === 12 && c === 12) imageSrc = "gridMainVH.png";
+		else if (r === 0 && (c === 4 || c === 8 || c === 12)) imageSrc="gridTopMain.png";
+		else if (r === 16 && (c === 4 || c === 8 || c === 12)) imageSrc="gridBottomMain.png";
+		else if (c === 0 && (r === 4 || r === 8 || r === 12)) imageSrc="gridLeftMain.png";
+		else if (c === 16 && (r === 4 || r === 8 || r === 12)) imageSrc="gridRightMain.png";
+		else if (r === 0) imageSrc = "gridTop.png";
+		else if (r === 16) imageSrc = "gridBottom.png";
+		else if (c === 0) imageSrc = "gridLeft.png";
+		else if (c === 16) imageSrc = "gridRight.png";
+		else if (r === 8 || r === 4 || r === 12) imageSrc = "gridMainH.png";
+		else if (c === 8 || c === 4 || c === 12) imageSrc = "gridMainV.png";
+		else imageSrc = "gridReg.png";
+		return (
+			<img className="boardGrid" src={require("./resources/" + imageSrc)} alt={"gg"} />
+		);
+	};
+}
+
 class PlaceMarker extends Component {
   render() {
-    var markerStyle;
-    if (this.props.value[0] === 9 && this.props.value[1] === 9) markerStyle = {margin: "-58px 0 0 281px"};
-    else if (this.props.value[0] === 5 && this.props.value[1] === 5) markerStyle = {margin: "-59px 0 0 145px"};
-    else if (this.props.value[0] === 5 && this.props.value[1] === 13) markerStyle = {margin: "-59px 0 0 417px"};
-    else if (this.props.value[0] === 13 && this.props.value[1] === 5) markerStyle = {margin: "-59px 0 0 145px"};
-    else if (this.props.value[0] === 13 && this.props.value[1] === 13) markerStyle = {margin: "-59px 0 0 417px"};
+  	let markerStyle;
+  	const pos = this.props.position;
+  	if (pos === "top-left") markerStyle = {margin: "152px 0 0 -140px"};
+  	else if (pos === "top-right") markerStyle = {margin: "152px 0 0 140px"};
+  	else if (pos === "bottom-left") markerStyle = {margin: "433px 0 0 -140px"};
+  	else if (pos === "bottom-right") markerStyle = {margin: "433px 0 0 140px"};
+  	else markerStyle = {margin: "292px 0 0 0"};
     return (
       <div className="placeMarker" style={markerStyle}></div>
     )
   }
 }
 
+class BoardRow extends Component {
+  renderArea(c) {
+    return <PlayArea key={this.props.row + c} position={[this.props.row, c]} colourState={this.props.colourState[c]} gameState={this.props.gameState[c]} onClick={() => this.props.onClick(c)} />;
+  }
+  render() {
+  	const rowPieces = [];
+  	for (var j = 0; j < 17; j++) {
+  		rowPieces.push(this.renderArea(j));
+  	}
+    return (
+    	<div className="boardRow">
+    		{ rowPieces }
+    	</div>
+    );
+  }
+}
+
 class Board extends Component {
-  renderArea(r, c) {
-    return <PlayArea colourState={this.props.colourState[r][c]} gameState={this.props.gameState[r][c]} onClick={() => this.props.onClick(r, c, "move")} />;
+  renderArea(r) {
+    return <BoardRow row={r} colourState={this.props.colourState[r]} gameState={this.props.gameState[r]} onClick={(c) => this.props.onClick(r, c, "move")} />;
   }
   componentDidMount() {
   	var node = ReactDOM.findDOMNode(this);
@@ -57,25 +105,21 @@ class Board extends Component {
   }
   render() {
     var gameBoard = [];
+    const row = []
     for (var i = 0; i < 17; i++) {
-      let row = [];
-      for (var j = 0; j < 17; j++) {
-        if ((i === 9 && j === 9) ||
-            (i === 5 && j === 5) ||
-            (i === 5 && j === 13) ||
-            (i === 13 && j === 5) ||
-            (i === 13 && j === 13)) row.push(<PlaceMarker value={[i, j]} />);
-        row.push(this.renderArea(i, j));
-      }
-      gameBoard.push(row);
+      row.push(this.renderArea(i));
     }
+    gameBoard.push(row);
     return (
-      <div className="board">
-        <div className="boardBackground">
+      <div id="boardContainer">
+        <div className="board">
+        	{ gameBoard }
         </div>
-        <div className="boardPieces">
-        { gameBoard }
-        </div>
+        <PlaceMarker position={"top-left"} />
+        <PlaceMarker position={"top-right"} />
+        <PlaceMarker position={"bottom-left"} />
+        <PlaceMarker position={"bottom-right"} />
+        <PlaceMarker position={"centre"} />
       </div>
     );
   }
@@ -197,7 +241,6 @@ class Game extends Component {
       <div>
         <Board colourState={this.state.colourState} gameState={this.state.gameState} onClick={(r, c, state) => this.handleClick(r, c, state)} />
         <div id="menu">
-          <small>Temporary: please resize your window until the dots are aligned with the board.</small>
 	        <div>{status}</div>
 	        <button disabled={!this.state.gameHistory.length} onClick={() => this.undoMove()}>Undo</button>
 	        <button onClick={() => this.restartGame()}>Restart</button>

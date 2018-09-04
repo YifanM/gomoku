@@ -4,10 +4,12 @@
   "private": true,
   "homepage": ".",
   "devDependencies": {
-    "react-scripts": "0.8.5"
+    "react-scripts": "0.8.5",
+    "redux-logger": "^3.0.6"
   },
   "dependencies": {
     "classnames": "^2.2.5",
+    "history": "^4.7.2",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-modal-dialog": "^4.0.5",

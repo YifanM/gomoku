@@ -1,33 +1,24 @@
 import React, { Component } from 'react';
-import Game from './game';
-import GameRoom from './gameRoom';
 
-export default class chooseGameMode extends Component {
-    gameMode = '';
+import * as actions from '../actions/game';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import './style.css';
 
-    chooseLocal = () => {
-        this.gameMode = 'local';
-        this.forceUpdate();
-    }
-
-    chooseOnline = () => {
-        this.gameMode = 'online';
-        this.forceUpdate();
-    }
-
+class chooseGameMode extends Component {
     render() {
-        if (!this.gameMode) {
-            return (
-                <div>
-                    <div>Choose your game mode</div>
-                    <button onClick={this.chooseLocal}>Local</button>
-                    <button onClick={this.chooseOnline}>Online</button>
+        return (
+            <div className="game-mode">
+                <h1>Choose your game mode</h1>
+                <div className="buttons">
+                    <button onClick={this.props.chooseLocal}>Local</button>
+                    <button onClick={this.props.chooseOnline}>Online</button>
                 </div>
-            );
-        } else if (this.gameMode === 'local') {
-            return (<Game />);
-        } else {
-            return (<GameRoom />);
-        }
+            </div>
+        );
     }
 }
+
+const mapDispatchToProps = (dispatch) => bindActionCreators(actions, dispatch);
+
+export default connect(null, mapDispatchToProps)(chooseGameMode);

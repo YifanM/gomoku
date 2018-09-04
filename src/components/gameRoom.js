@@ -1,35 +1,49 @@
 import React, { Component } from 'react';
+import './style.css';
+import { connect } from 'react-redux';
+import * as actions from '../actions/game';
+import { bindActionCreators } from 'redux';
 
-export default class GameRoom extends Component {
-    ws = null;
+class GameRoom extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            username: ''
+        };
+    }
     
-    // const send = (message) => {
-    //     if (ws) {
-    //         ws.send('test123');
-    //     }
-    // }
-    
-    // const close = () => {
-    //     ws.close();
-    //     ws = null;
-    // }
-    
-    createRoom = () => {
-        if (!this.ws) {
-            this.ws = new WebSocket('ws://127.0.0.1:8888/ws');
-            this.ws.onmessage = (message) => {
-                alert(message);
-            }
-        }
+    updateUsername = (e) => {
+        this.setState({
+            username: e.target.value
+        });
     }
 
     render() {
         return (
-        <div>
-            <button onClick={this.createRoom}>Create</button>
-            <input type="text" />
-            <button>Join</button>
+        <div className="game-room">
+            <h1>Start an online game</h1>
+            <div className="container">
+                <div>Username</div>
+                <input value={this.state.username} onChange={this.updateUsername} />        
+            </div>
+            <div className="container">
+                <div>
+                    <button onClick={() => this.props.createRoom(this.state.username)}>Create</button>
+                </div>
+                <div>
+                    <button onClick={() => this.props.joinRoom(this.state.username)}>Join</button>
+                </div>
+            </div>
         </div>
         );
     }
 }
+
+const mapStateToProps = (state) => ({
+    room: state.game.room
+});
+
+const mapDispatchToProps = (dispatch) => bindActionCreators(actions, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(GameRoom);

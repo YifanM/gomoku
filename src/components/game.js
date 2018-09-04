@@ -5,8 +5,12 @@ import ReactDOM from 'react-dom';
 import classnames from 'classnames';
 import {ModalContainer, ModalDialog} from 'react-modal-dialog';
 import NotificationSystem from 'react-notification-system';
-
+import { connect } from 'react-redux';
+import * as actions from '../actions/game';
 import { moveResult } from '../utils/gameActions';
+import { bindActionCreators } from 'redux';
+import { getPlayersOnline } from '../utils/websocket';
+import * as websocket from '../utils/websocket';
 
 class PlayArea extends Component {
     render() {
@@ -128,24 +132,48 @@ class Board extends Component {
     }
 }
 
-export default class Game extends Component {
+const mapStateToProps = (state) => ({
+    mode: state.game.mode,
+    username: state.game.username,
+    wins: state.game.wins,
+    losses: state.game.losses,
+    numOnline: state.game.numOnline,
+    colour: state.game.colour,
+    room: state.game.room,
+    roomType: state.game.roomType
+});
+
+const mapDispatchToProps = (dispatch) => bindActionCreators(actions, dispatch);
+
+let childRef;
+export { childRef };
+
+class Game extends Component {
     notification = null;
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
-        gameState: Array(17).fill(Array(17).fill(null)),
-        colourState: Array(17).fill(Array(17).fill(null)),
-        gameHistory: [],
-        blackMove: true,
-        initialMoveBlack: true,
-        winner: "",
-        blackWins: 0,
-        whiteWins: 0,
-        isModalOpen: false,
+            gameState: Array(17).fill(Array(17).fill(null)),
+            colourState: Array(17).fill(Array(17).fill(null)),
+            gameHistory: [],
+            blackMove: true,
+            initialMoveBlack: true,
+            winner: "",
+            blackWins: 0,
+            whiteWins: 0,
+            isModalOpen: false,
         };
+        if (props.mode === 'online' && props.username) {
+            props.getPlayerStats(props.username);
+        }
     }
-    handleClick(r, c, state) {
+
+    handleClick = (r, c, state, fromWs) => {
+        if (this.props.mode === 'online' && !fromWs) {
+            if (this.state.blackMove && this.props.colour === 'white') return;
+            if (!this.state.blackMove && this.props.colour === 'black') return;
+        }
         if ((this.state.gameState[r][c] || this.state.winner) && state === "move") return;
         const gameState = this.state.gameState.map((row) => row.slice());
         const colourState = this.state.colourState.map((row) => row.slice());
@@ -173,8 +201,24 @@ export default class Game extends Component {
                 gameState[r][c] = "w";
                 colourState[r][c] = "w";
             }
+            if (this.props.mode === 'online') {
+                websocket.sendMove(r, c, this.props.colour, this.props.room);
+            }
             gameHistory.push([r, c]);
-            if (result) result === "Black wins." ? blackWins += 1 : whiteWins += 1;	
+            if (result) {
+                result === "Black wins." ? blackWins += 1 : whiteWins += 1;
+                if (this.props.mode === 'online') {
+                    const winner = result === 'Black wins.' ? 'black' : 'white';
+                    if (this.props.roomType === 'create') {
+                        websocket.finishGame(winner);
+                    }
+                    if (this.props.colour === winner) {
+                        this.props.win();
+                    } else {
+                        this.props.lose();
+                    }
+                } 
+            }
         } else { // undo
             if (this.state.winner === "Black wins.") blackWins -= 1;
             else if (this.state.winner === "White wins.") whiteWins -= 1;
@@ -192,7 +236,8 @@ export default class Game extends Component {
             whiteWins: whiteWins,
         });
     }
-    restartGame() {
+
+    restartGame = () => {
         if (this.state.winner === "Black wins.") {
             this.setState({
                 blackMove: false,
@@ -239,18 +284,56 @@ export default class Game extends Component {
         if (this.state.winner) status = this.state.winner;
         else status = (this.state.blackMove ? "Black" : "White") + " to move.";
 
+        let infoElement = <div />;
+        if (this.props.mode === 'online') {
+            infoElement = (<div className="info-board">
+                <div>
+                    <div className="info-board-title">Colour</div>
+                    <div>{this.props.colour}</div>
+                </div>
+                <div>
+                    <div className="info-board-title">Username</div>
+                    <div>{this.props.username}</div>
+                </div>
+                <div>
+                    <div className="info-board-title">Wins</div>
+                    <div>{this.props.wins}</div>
+                </div>
+                <div>
+                    <div className="info-board-title">Losses</div>
+                    <div>{this.props.losses}</div>
+                </div>
+                <div>
+                    <div className="info-board-title">Players Online</div>
+                    <div>{this.props.numOnline}</div>
+                </div>
+            </div>);
+        }
+
+        let controlElement = (<div id="menu">
+            <div>{status}</div>
+        </div>);
+        if (this.props.mode === 'local') {
+            controlElement = (<div id="menu">
+                <div>{status}</div>
+                <button disabled={!this.state.gameHistory.length} onClick={() => this.undoMove()}>Undo</button>
+                <button onClick={() => this.restartGame()}>Restart</button>
+            </div>);
+        }
+
+        let scoreboardElement = <div />;
+        if (this.props.mode === 'local') {
+            scoreboardElement = (<div id="scoreboard">
+                <h4>Black's score: {this.state.blackWins}</h4>
+                <h4>White's score: {this.state.whiteWins}</h4>
+            </div>);
+        }
         return (
             <div>
-                <Board colourState={this.state.colourState} gameState={this.state.gameState} onClick={(r, c, state) => this.handleClick(r, c, state)} />
-                <div id="menu">
-                    <div>{status}</div>
-                    <button disabled={!this.state.gameHistory.length} onClick={() => this.undoMove()}>Undo</button>
-                    <button onClick={() => this.restartGame()}>Restart</button>
-                </div>
-                <div id="scoreboard">
-                    <h4>Black's score: {this.state.blackWins}</h4>
-                    <h4>White's score: {this.state.whiteWins}</h4>
-                </div>
+                <div>{infoElement}</div>
+                <Board ref={child => childRef = child} restartGame={this.restartGame} colourState={this.state.colourState} gameState={this.state.gameState} onClick={(r, c, state, fromWs) => this.handleClick(r, c, state, fromWs)} />
+                {controlElement}
+                {scoreboardElement}
                 <div id="rules">
                     <button id="rules" onClick={() => this.openModal()}>Rules</button>
                 </div>
@@ -274,3 +357,5 @@ export default class Game extends Component {
         );
     }
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(Game);

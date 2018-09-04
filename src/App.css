@@ -130,3 +130,14 @@ button {
 #rules {
   text-align: center;
 }
+
+.info-board {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-board > div {
+  display: flex;
+  width: 200px;
+  justify-content: space-between;
+}

@@ -1,0 +1,59 @@
+.game-mode, .game-room, .join-room {
+    height: calc(100vh - 34px);
+    width: calc(100vw - 34px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.game-mode h1, .game-room h1, .join-room h1 {
+    font-size: 4rem;
+    font-weight: bold;
+}
+
+.join-room h2 {
+    font-size: 2rem;
+}
+
+.game-mode .buttons, .game-room .buttons {
+    display: flex;
+    justify-content: space-evenly;
+    width: 40%;
+}
+
+.game-mode button, .game-room button, .join-room button {
+    padding: 5px;
+    margin: 5px;
+    background: white;
+    border: none;
+    font-size: 2.5rem;
+    outline: none;
+}
+
+.game-mode button:hover, .game-room button:hover, .join-room button:hover {
+    border: 2px solid black;
+    margin: 3px;
+}
+
+.game-room .container > div {
+    display: flex;
+    font-size: 1.5rem;
+    justify-content: space-evenly;
+}
+
+.game-room .container input, .join-room input {
+    border: 0;
+    outline: 0;
+    background: transparent;
+    border-bottom: 1px solid black;
+    width: 30%;
+    font-size: 1.5rem;
+}
+
+.game-room .container, .join-room .container {
+    width: 40%;
+    display: flex;
+    justify-content: space-evenly;
+    margin: 30px;
+}

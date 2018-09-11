@@ -1,6 +1,6 @@
-This is only the client.
-The messaging server is here https://github.com/YifanM/messaging-server.
-The database server is here https://github.com/YifanM/server.
+## This is only the client.
+### The messaging server is here https://github.com/YifanM/messaging-server.
+### The database server is here https://github.com/YifanM/server.
 
 A 2-player board game using ReactJS.
 
